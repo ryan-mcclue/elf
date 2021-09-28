@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: zlib-acknowledgement
 
-#include <printf.h>
-
-void
-asterix_name(char buf[], char *name)
-{
-  sprintf(buf, "***** %s *****", name);
-}
+//#include <printf.h>
+//
+//void
+//asterix_name(char buf[], char *name)
+//{
+//  sprintf(buf, "***** %s *****", name);
+//}
 
 int
 add_int(int x, int y)

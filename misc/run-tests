@@ -1,4 +1,4 @@
 #!/bin/sh
 # SPDX-License-Identifier: zlib-acknowledgement 
 
-./build/code/static-elf
+./build/test-static-elf

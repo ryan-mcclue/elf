@@ -245,27 +245,27 @@ elf_lookup_function(ElfLoadResult *load_result, char *function_name)
   return function;
 }
 
-int
-main(int argc, char *argv[])
-{
-  ElfLoadResult elf_load_result = elf_load("adder.so");
-  if (elf_load_result.error_code < 0)
-  {
-    BP();
-    //printf("%s\n", elf_load_result_get_error_str(&elf_load_result));
-    //Failed to load elf file %s (%s)\n", elf_load_result.name, 
-    return EXIT_FAILURE;
-  }
-
-  int (*function)(int, int) = elf_lookup_function(&elf_load_result, "add_int");
-  if (function == NULL)
-  {
-    //printf("Failed to find %s inside elf %s\n", function_name, elf_load_result.name);
-    BP();
-    return EXIT_FAILURE;
-  }
-
-  int res = function(10, 23);
-
-  return EXIT_SUCCESS;
-}
+//int
+//main(int argc, char *argv[])
+//{
+//  ElfLoadResult elf_load_result = elf_load("adder.so");
+//  if (elf_load_result.error_code < 0)
+//  {
+//    BP();
+//    //printf("%s\n", elf_load_result_get_error_str(&elf_load_result));
+//    //Failed to load elf file %s (%s)\n", elf_load_result.name, 
+//    return EXIT_FAILURE;
+//  }
+//
+//  int (*function)(int, int) = elf_lookup_function(&elf_load_result, "add_int");
+//  if (function == NULL)
+//  {
+//    //printf("Failed to find %s inside elf %s\n", function_name, elf_load_result.name);
+//    BP();
+//    return EXIT_FAILURE;
+//  }
+//
+//  int res = function(10, 23);
+//
+//  return EXIT_SUCCESS;
+//}

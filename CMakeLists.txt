@@ -2,6 +2,7 @@
 
 # TODO(Ryan): Arch detection
 # build type options that pass flags onwards
+# compiler and linker flags (compile sample lib)
 cmake_minimum_required(VERSION 3.17)
 project(ELF
         VERSION 0.0.1
@@ -24,15 +25,15 @@ if(NOT cmocka_FOUND)
   )
 endif()
 
-CPMAddPackage(
-  NAME printf
-  GITHUB_REPOSITORY mpaland/printf
-  VERSION 4.0.0
-  DOWNLOAD_ONLY
-)
-add_library(printf INTERFACE)
-target_sources(printf INTERFACE ${printf_SOURCE_DIR}/printf.c)
-target_include_directories(printf SYSTEM INTERFACE ${printf_SOURCE_DIR})
+#CPMAddPackage(
+#  NAME printf
+#  GITHUB_REPOSITORY mpaland/printf
+#  VERSION 4.0.0
+#  DOWNLOAD_ONLY
+#)
+#add_library(printf INTERFACE)
+#target_sources(printf INTERFACE ${printf_SOURCE_DIR}/printf.c)
+#target_include_directories(printf SYSTEM INTERFACE ${printf_SOURCE_DIR})
 
 add_library(static-elf STATIC)
 target_sources(static-elf PRIVATE code/static-elf.c)
@@ -43,9 +44,11 @@ target_compile_definitions(static-elf PRIVATE
 )
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-   add_library(sample-elf SHARED)
-   target_sources(sample-elf PRIVATE tests/sample-elf.c)
-   target_link_libraries(sample-elf PRIVATE printf)
+   #add_library(sample-elf SHARED)
+   #target_sources(sample-elf PRIVATE tests/sample-elf.c)
+   #target_link_libraries(sample-elf PRIVATE printf)
 
-   add_executable(static-elf-test)
+   add_executable(test-static-elf)
+   target_sources(test-static-elf PRIVATE tests/test-static-elf.c)
+   target_link_libraries(test-static-elf PRIVATE cmocka static-elf)
 endif()
