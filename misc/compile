@@ -1,0 +1,18 @@
+#!/bin/sh
+# SPDX-License-Identifier: zlib-acknowledgement 
+
+lib_flags="-ffreestanding -nostdlib -fPIC -shared"
+size_compile_flags="-fno-unwind-tables -fno-asynchronous-unwind-tables -fdata-sections -Os"
+size_linker_flags="-z noseparate-code --gc-sections"
+
+# NOTE(Ryan): Useful invocations
+# $(objdump -M intel -d a.out)
+# $(readelf --segments a.out)
+# $(xxd -g 1 a.out)
+
+# Must be C as C++ mangles symbol names
+gcc -c $lib_flags $size_compile_flags adder.c -o adder.o
+
+ld $lib_flags $size_linker_flags adder.o -o adder.so 
+
+strip --remove-section .comment --remove-section .note.* adder.so 

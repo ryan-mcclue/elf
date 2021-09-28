@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: zlib-acknowledgement
+
+*
+
+!.gitignore
+!README.md
+!LICENSE
+
+!CMakeLists.txt
+
+!cmake/
+!cmake/**/*.cmake
+
+!code/
+!code/CMakeLists.txt
+!code/**/*.[ch]
+
+!tests/
+!tests/**/*.[ch]
+
+!misc/
+!misc/**/*
+
+!work/
+!work/.gdbinit
