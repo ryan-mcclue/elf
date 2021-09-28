@@ -1,4 +1,7 @@
 # SPDX-License-Identifier: zlib-acknowledgement
+
+# TODO(Ryan): Arch detection
+# build type options that pass flags onwards
 cmake_minimum_required(VERSION 3.17)
 project(ELF
         VERSION 0.0.1
@@ -6,20 +9,43 @@ project(ELF
         LANGUAGES C)
 set_property(GLOBAL PROPERTY C_STANDARD 11)
 
-#include(cmake/CPM.cmake)
-#
-#find_package(cmocka QUIET)
-#if(NOT cmocka_FOUND)
-#  CPMAddPackage(
-#    NAME cmocka
-#    GITHUB_REPOSITORY https://git.cryptomilk.org/projects/cmocka.git/
-#    VERSION 1.1.5
-#    GIT_TAG cmocka-1.1.5
-#    OPTIONS
-#      "WITH_EXAMPLES OFF"
-#      "CMAKE_BUILD_TYPE DEBUG"
-#  )
-#endif()
+include(cmake/CPM.cmake)
 
-add_subdirectory(code)
-# add_subdirectory(test)
+find_package(cmocka QUIET)
+if(NOT cmocka_FOUND)
+  CPMAddPackage(
+    NAME cmocka
+    GITHUB_REPOSITORY https://git.cryptomilk.org/projects/cmocka.git/
+    VERSION 1.1.5
+    GIT_TAG cmocka-1.1.5
+    OPTIONS
+      "WITH_EXAMPLES OFF"
+      "CMAKE_BUILD_TYPE DEBUG"
+  )
+endif()
+
+CPMAddPackage(
+  NAME printf
+  GITHUB_REPOSITORY mpaland/printf
+  VERSION 4.0.0
+  DOWNLOAD_ONLY
+)
+add_library(printf INTERFACE)
+target_sources(printf INTERFACE ${printf_SOURCE_DIR}/printf.c)
+target_include_directories(printf SYSTEM INTERFACE ${printf_SOURCE_DIR})
+
+add_library(static-elf STATIC)
+target_sources(static-elf PRIVATE code/static-elf.c)
+target_include_directories(static-elf PUBLIC code)
+target_compile_definitions(static-elf PRIVATE
+  STATIC_ELF_DEV
+  ARCH_64
+)
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+   add_library(sample-elf SHARED)
+   target_sources(sample-elf PRIVATE tests/sample-elf.c)
+   target_link_libraries(sample-elf PRIVATE printf)
+
+   add_executable(static-elf-test)
+endif()
