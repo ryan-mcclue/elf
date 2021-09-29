@@ -50,5 +50,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
    add_executable(test-static-elf)
    target_sources(test-static-elf PRIVATE tests/test-static-elf.c)
-   target_link_libraries(test-static-elf PRIVATE cmocka static-elf)
+   target_include_directories(test-static-elf PRIVATE code)
+   target_include_directories(test-static-elf SYSTEM PRIVATE ${CMOCKA_INCLUDE_DIR})
+   target_link_libraries(test-static-elf PRIVATE ${CMOCKA_LIBRARIES} static-elf)
 endif()
