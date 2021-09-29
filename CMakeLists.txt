@@ -3,15 +3,21 @@
 # TODO(Ryan): Arch detection
 # build type options that pass flags onwards
 # compiler and linker flags (compile sample lib)
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.20)
 project(ELF
         VERSION 0.0.1
         DESCRIPTION "Statically Linked ELF Shared Object Reader"
         LANGUAGES C)
 set_property(GLOBAL PROPERTY C_STANDARD 11)
 
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  include(CTest)
+endif()
+
 include(cmake/CPM.cmake)
 
+# Course provides very convoluted way of handling external projects (cmocka)
+# For the moment, this relatively simple command will suffice
 find_package(cmocka QUIET)
 if(NOT cmocka_FOUND)
   CPMAddPackage(
@@ -25,6 +31,8 @@ if(NOT cmocka_FOUND)
   )
 endif()
 
+
+# NOTE(Ryan): Compiling any library to be used should be an interface library
 #CPMAddPackage(
 #  NAME printf
 #  GITHUB_REPOSITORY mpaland/printf
@@ -43,14 +51,27 @@ target_compile_definitions(static-elf PRIVATE
   ARCH_64
 )
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+# ON by default
+if(BUILD_TESTING)
    #add_library(sample-elf SHARED)
    #target_sources(sample-elf PRIVATE tests/sample-elf.c)
    #target_link_libraries(sample-elf PRIVATE printf)
+   add_executable(static-elf-tests)
+   target_sources(static-elf-tests PRIVATE tests/static-elf-tests.c)
+   target_include_directories(static-elf-tests PRIVATE code)
+   target_include_directories(static-elf-tests SYSTEM PRIVATE ${CMOCKA_INCLUDE_DIR})
+   target_link_libraries(static-elf-tests PRIVATE ${CMOCKA_LIBRARIES} static-elf)
 
-   add_executable(test-static-elf)
-   target_sources(test-static-elf PRIVATE tests/test-static-elf.c)
-   target_include_directories(test-static-elf PRIVATE code)
-   target_include_directories(test-static-elf SYSTEM PRIVATE ${CMOCKA_INCLUDE_DIR})
-   target_link_libraries(test-static-elf PRIVATE ${CMOCKA_LIBRARIES} static-elf)
+   # TODO(Ryan): When building sample test executables, use CMAKE_BINARY_DIR
+   # How do we get this to run?
+   add_custom_target(NAME test-static-elf 
+     COMMAND static-elf-tests
+     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests
+     COMMENT "EXECUTE I COMMAND THEE"
+   )
+
+   add_test(NAME sample-elf.test
+     COMMAND static-elf-tests
+     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests
+   )
 endif()
