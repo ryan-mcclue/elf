@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: zlib-acknowledgement 
+
+test ! -d build && mkdir build
+
+cmake -DCMAKE_BUILD_TYPE=Debug -Bbuild

@@ -1,5 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: zlib-acknowledgement 
 
-# NOTE(Ryan): Assuming prior invocation: cmake -DCMAKE_BUILD_TYPE=Debug -Bbuild
+# cmake --build /build --target <name> 
+
 cmake --build build/

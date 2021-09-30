@@ -63,11 +63,10 @@ if(BUILD_TESTING)
    target_link_libraries(static-elf-tests PRIVATE ${CMOCKA_LIBRARIES} static-elf)
 
    # TODO(Ryan): When building sample test executables, use CMAKE_BINARY_DIR
-   # How do we get this to run?
-   add_custom_target(NAME test-static-elf 
+   # ninja -t targets to list targets for debugging
+   add_custom_target(test-static-elf
      COMMAND static-elf-tests
      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests
-     COMMENT "EXECUTE I COMMAND THEE"
    )
 
    add_test(NAME sample-elf.test
