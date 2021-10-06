@@ -10,6 +10,8 @@ project(ELF
         LANGUAGES C)
 set_property(GLOBAL PROPERTY C_STANDARD 11)
 
+# include(cmake/ArgsCheck.cmake)
+
 set(default_build_type "RelWithDebInfo")
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
@@ -30,17 +32,6 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE 
     BOOL "Export compile commands" FORCE)
-
-function(apply_supported_c_compiler_flags target scope flag_list)
-  # IMPORTANT(Ryan): If a variable is passed in, must double-dereference as a single
-  # dereference will only give the name
-  foreach(flag ${${flag_list}})
-
-  endforeach()
-endfunction()
-list(APPEND desired_c_flags
-        "-Wall"
-        "-Wextra")
 
 # NOTE(Ryan): When not a dependency
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -97,7 +88,9 @@ if(BUILD_TESTING)
    target_include_directories(static-elf-tests PRIVATE code)
    target_include_directories(static-elf-tests SYSTEM PRIVATE ${CMOCKA_INCLUDE_DIR})
    target_link_libraries(static-elf-tests PRIVATE ${CMOCKA_LIBRARIES} static-elf)
-   target_compile_options(static-elf-tests PRIVATE -Wno-unused-parameter)
+
+   list(APPEND desired_c_flags "-Wno-unused-parameter")
+   # apply_supported_c_compiler_flags(static-elf-tests PRIVATE desired_c_flags)
 
    # TODO(Ryan): When building sample test executables, use CMAKE_BINARY_DIR
    # ninja -t targets to list targets for debugging
