@@ -1,25 +1,34 @@
 # SPDX-License-Identifier: zlib-acknowledgement
 
-function(apply_supported_compiler_flags lang target scope flag_list)
-  include(Check${lang}CompilerFlag)
-  # TODO(Ryan): Replace with a macro/function and move into .cmake file
-  # String passed in as "-Wval;-Wother
-  if(NOT "${${flag_list}}" STREQUAL "")
-    set(flag_list ${${flag_list}})
+# IMPORTANT(Ryan): If a variable is passed in, must double-dereference as a single
+# dereference will only give the name
+macro(__extract_var_value var value)
+  if(NOT "${${var}}" STREQUAL "")
+    set(value ${${var}})
   endif()
-  # IMPORTANT(Ryan): If a variable is passed in, must double-dereference as a single
-  # dereference will only give the name
-  foreach(flag ${flag_list})
+endmacro()
+
+# IMPORTANT(Ryan): Assume the language passed in is actually valid and used in the project
+# IMPORTANT(Ryan): String passed as "val1;val2;val3"
+function(apply_supported_compiler_flags lang target scope flags)
+  include(Check${lang}CompilerFlag)
+  __extract_var_value(flags flags_var)
+  foreach(flag ${flags_var})
     string(REPLACE - _ flag_var ${flag})
     cmake_language(CALL check_${lang}_compiler_flag ${flag} ${flag_var})
     if(${flag_var})
       target_compile_options(${target} ${scope} ${flag}) 
     endif()
   endforeach()
-
-  # TODO(Ryan): Check that the language is actually enabled?
 endfunction()
 
-# TODO(Ryan): Replace cmake_language with
-# include(CheckLinkerFlag)
-# check_linker_flag(${lang} ${flag} ${flag_var})  
+function(apply_supported_linker_flags lang target scope flags)
+  include(CheckLinkerFlag)
+  __extract_var_value(flags flags_var)
+  foreach(flag ${flags_var})
+    check_linker_flag(${lang} ${flag} ${flag_var})  
+    if(${flag_var})
+      target_link_options(${target} ${scope} ${flag}) 
+    endif()
+  endforeach()
+endfunction()

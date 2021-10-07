@@ -10,7 +10,7 @@ project(ELF
         LANGUAGES C)
 set_property(GLOBAL PROPERTY C_STANDARD 11)
 
-# include(cmake/ArgsCheck.cmake)
+include(cmake/ArgsCheck.cmake)
 
 set(default_build_type "RelWithDebInfo")
 if(NOT CMAKE_BUILD_TYPE)
@@ -70,7 +70,11 @@ endif()
 #target_include_directories(printf SYSTEM INTERFACE ${printf_SOURCE_DIR})
 
 # TODO(Ryan): Remove STATIC as have an option now to control this
-add_library(static-elf STATIC)
+if(BUILD_SHARED_LIB)
+  add_library(static-elf SHARED)
+else()
+  add_library(static-elf STATIC)
+endif()
 target_sources(static-elf PRIVATE code/static-elf.c)
 target_include_directories(static-elf PUBLIC code)
 target_compile_definitions(static-elf PRIVATE
@@ -105,7 +109,10 @@ if(BUILD_TESTING)
    )
 endif()
 
+# TODO(Ryan): Options just allow booleans?
 # CMakeCache.txt store persistent build information and variables.
 # There purpose is to allow users to configure build settings
 # They are globally accessible
 # Alter with -D<var><type>:=<value> (ccmake gives us graphical way)
+
+# if("${CMAKE_CROSSCOMPILING}")
