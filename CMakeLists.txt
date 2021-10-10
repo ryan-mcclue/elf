@@ -11,6 +11,7 @@ project(ELF
 set_property(GLOBAL PROPERTY C_STANDARD 11)
 
 include(cmake/ArgsCheck.cmake)
+# include(cmake/BuildOptions.cmake)
 
 set(default_build_type "RelWithDebInfo")
 if(NOT CMAKE_BUILD_TYPE)
@@ -21,8 +22,14 @@ if(NOT CMAKE_BUILD_TYPE)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
                STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
+
+# Require the boolean operator to turn into 0 or 1
+# target_compile_options(c PRIVATE $<$<BOOL:${CMAKE_BUILD_TYPE}>:SOMETHING>)
+
+
 set(default_shared_lib OFF)
-# IMPORTANT(Ryan): Correctly handle OFF value or not set
+# IMPORTANT(Ryan): Correctly handle OFF value or not set (better to use option())
+# option(BUILD_SHARED_LIB "Enable building shared lib" OFF)
 if("${BUILD_SHARED_LIB}" STREQUAL "")
   message(STATUS "Setting build shared library type to '${default_shared_lib}' as none was specified.")
   set(BUILD_SHARED_LIB "${default_shared_lib}" CACHE
@@ -82,6 +89,7 @@ target_compile_definitions(static-elf PRIVATE
   ARCH_64
 )
 
+# if(BUILD_TESTING AND (ELF_BUILD_TESTING OR ...))
 # ON by default
 if(BUILD_TESTING)
    #add_library(sample-elf SHARED)
@@ -92,6 +100,7 @@ if(BUILD_TESTING)
    target_include_directories(static-elf-tests PRIVATE code)
    target_include_directories(static-elf-tests SYSTEM PRIVATE ${CMOCKA_INCLUDE_DIR})
    target_link_libraries(static-elf-tests PRIVATE ${CMOCKA_LIBRARIES} static-elf)
+   # target_link_libraries(name PRIVATE val1 PUBLIC val2 ...)
 
    list(APPEND desired_c_flags "-Wno-unused-parameter")
    # apply_supported_c_compiler_flags(static-elf-tests PRIVATE desired_c_flags)
