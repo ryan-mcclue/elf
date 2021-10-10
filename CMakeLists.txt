@@ -51,18 +51,19 @@ include(cmake/CPM.cmake)
 
 # Course provides very convoluted way of handling external projects (cmocka)
 # For the moment, this relatively simple command will suffice
-find_package(cmocka QUIET)
-if(NOT cmocka_FOUND)
-  CPMAddPackage(
-    NAME cmocka
-    GITHUB_REPOSITORY https://git.cryptomilk.org/projects/cmocka.git/
-    VERSION 1.1.5
-    GIT_TAG cmocka-1.1.5
-    OPTIONS
-      "WITH_EXAMPLES OFF"
-      "CMAKE_BUILD_TYPE DEBUG"
-  )
-endif()
+find_package(cmocka REQUIRED)
+#find_package(cmocka QUIET)
+#if(NOT cmocka_FOUND)
+#  CPMAddPackage(
+#    NAME cmocka
+#    GITHUB_REPOSITORY https://git.cryptomilk.org/projects/cmocka.git/
+#    VERSION 1.1.5
+#    GIT_TAG cmocka-1.1.5
+#    OPTIONS
+#      "WITH_EXAMPLES OFF"
+#      "CMAKE_BUILD_TYPE DEBUG"
+#  )
+#endif()
 
 
 # NOTE(Ryan): Compiling any library to be used should be an interface library
@@ -124,4 +125,6 @@ endif()
 # They are globally accessible
 # Alter with -D<var><type>:=<value> (ccmake gives us graphical way)
 
+# -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/arm-none-eabi-gcc.cmake
+# keep toolchain files simple and layered. no complex logic. use individual one for each system
 # if("${CMAKE_CROSSCOMPILING}")
