@@ -23,8 +23,6 @@ if(NOT CMAKE_BUILD_TYPE)
                STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-# Require the boolean operator to turn into 0 or 1
-# target_compile_options(c PRIVATE $<$<BOOL:${CMAKE_BUILD_TYPE}>:SOMETHING>)
 
 
 set(default_shared_lib OFF)
@@ -86,6 +84,8 @@ else()
 endif()
 target_sources(static-elf PRIVATE code/static-elf.c)
 target_include_directories(static-elf PUBLIC code)
+# NOTE(Ryan): Enable LTO
+set_property(TARGET static-elf PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 # IMPORTANT(Ryan): Global variables likes set(CMAKE_C_FLAGS_DEBUG) only used for toolchain files
 target_compile_definitions(static-elf PRIVATE
@@ -122,6 +122,8 @@ if(BUILD_TESTING)
    )
 endif()
 
+# TODO(Ryan): Do sucessive target_add()... overwrite (in which case generator expressions become essential)
+
 # TODO(Ryan): Options just allow booleans?
 # CMakeCache.txt store persistent build information and variables.
 # There purpose is to allow users to configure build settings
@@ -131,15 +133,22 @@ endif()
 # -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/arm-none-eabi-gcc.cmake
 # keep toolchain files simple and layered. no complex logic. use individual one for each system
 
-#if(NOT CMAKE_TOOLCHAIN_FILE)
-#    message(WARNING "[WARN] CMAKE_TOOLCHAIN_FILE not specified: Using XXX toolchain as the default.")
-#    include(cmake/toolchains/your-default-toolchain.cmake)
-#endif() 
 # if(NOT CMAKE_CROSSCOMPILING)
 
+# Require the boolean operator to turn into 0 or 1
+# target_compile_options(c PRIVATE $<$<BOOL:${CMAKE_BUILD_TYPE}>:SOMETHING>)
+# also have builtin variable queries for generator expressions $<PLATFORM_ID:Unix>
 
 # include(CMakeDependentOption)
 # CMAKE_DEPENDENT_OPTION(LIBC_BUILD_TESTING
 #   "Enable libc testing even when used as an external project."
 #   OFF
 #   "NOT CMAKE_CROSSCOMPILING" OFF)
+
+# IMPORTANT(Ryan): Toolchain files don't have to cross-compile (don't modify CMAKE_SYSTEM variables)
+#if(NOT CMAKE_TOOLCHAIN_FILE)
+#    message(WARNING "[WARN] CMAKE_TOOLCHAIN_FILE not specified: Using XXX toolchain as the default.")
+#    include(cmake/toolchains/your-default-toolchain.cmake)
+#endif() 
+
+# CMAKE_C_COMPILER_ID, CMAKE_SYSTEM_NAME

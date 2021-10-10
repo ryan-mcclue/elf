@@ -1,5 +1,9 @@
 # IMPORTANT(Ryan): Changes to toolchain files must be followed by deletion of build/
 
+# TODO(Ryan): Why not specify CMAKE_HOST_SYSTEM_NAME?
+# https://embeddedartistry.com/lesson/cmake-link-time-optimization/ utilises this variable, but what sets it?
+
+
 set(CMAKE_SYSTEM_NAME Generic)
 # TODO(Ryan): Perhaps specify arm32 here as from armv8 can be 64bit. aarch64 is different ISA
 set(CMAKE_SYSTEM_PROCESSOR arm)

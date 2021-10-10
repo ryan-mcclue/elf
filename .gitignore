@@ -10,6 +10,8 @@
 
 !cmake/
 !cmake/toolchains
+!cmake/toolchains/cross
+!cmake/toolchains/native
 !cmake/**/*.cmake
 
 !code/
