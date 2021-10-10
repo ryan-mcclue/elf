@@ -49,9 +49,10 @@ endif()
 
 include(cmake/CPM.cmake)
 
+# TODO(Ryan): Require building from source if wanting to cross-compile
+find_package(cmocka REQUIRED)
 # Course provides very convoluted way of handling external projects (cmocka)
 # For the moment, this relatively simple command will suffice
-find_package(cmocka REQUIRED)
 #find_package(cmocka QUIET)
 #if(NOT cmocka_FOUND)
 #  CPMAddPackage(
@@ -85,6 +86,8 @@ else()
 endif()
 target_sources(static-elf PRIVATE code/static-elf.c)
 target_include_directories(static-elf PUBLIC code)
+
+# IMPORTANT(Ryan): Global variables likes set(CMAKE_C_FLAGS_DEBUG) only used for toolchain files
 target_compile_definitions(static-elf PRIVATE
   STATIC_ELF_DEV
   ARCH_64
@@ -127,4 +130,16 @@ endif()
 
 # -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/arm-none-eabi-gcc.cmake
 # keep toolchain files simple and layered. no complex logic. use individual one for each system
-# if("${CMAKE_CROSSCOMPILING}")
+
+#if(NOT CMAKE_TOOLCHAIN_FILE)
+#    message(WARNING "[WARN] CMAKE_TOOLCHAIN_FILE not specified: Using XXX toolchain as the default.")
+#    include(cmake/toolchains/your-default-toolchain.cmake)
+#endif() 
+# if(NOT CMAKE_CROSSCOMPILING)
+
+
+# include(CMakeDependentOption)
+# CMAKE_DEPENDENT_OPTION(LIBC_BUILD_TESTING
+#   "Enable libc testing even when used as an external project."
+#   OFF
+#   "NOT CMAKE_CROSSCOMPILING" OFF)

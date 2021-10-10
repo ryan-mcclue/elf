@@ -9,6 +9,7 @@
 !CMakeLists.txt
 
 !cmake/
+!cmake/toolchains
 !cmake/**/*.cmake
 
 !code/
