@@ -1,8 +1,5 @@
 # SPDX-License-Identifier: zlib-acknowledgement
 
-# TODO(Ryan): Arch detection
-# build type options that pass flags onwards
-# compiler and linker flags (compile sample lib)
 cmake_minimum_required(VERSION 3.20)
 project(ELF
         VERSION 0.0.1
@@ -12,6 +9,7 @@ set_property(GLOBAL PROPERTY C_STANDARD 11)
 
 include(cmake/ArgsCheck.cmake)
 # include(cmake/BuildOptions.cmake)
+# include(cmake/Conversions.cmake)
 
 set(default_build_type "RelWithDebInfo")
 if(NOT CMAKE_BUILD_TYPE)
@@ -66,12 +64,13 @@ find_package(cmocka REQUIRED)
 
 
 # NOTE(Ryan): Compiling any library to be used should be an interface library
-#CPMAddPackage(
-#  NAME printf
-#  GITHUB_REPOSITORY mpaland/printf
-#  VERSION 4.0.0
-#  DOWNLOAD_ONLY
-#)
+# Can also use interface to group a list of files together for say cross-compilation inclusion
+# CPMAddPackage(
+#   NAME printf
+#   GITHUB_REPOSITORY mpaland/printf
+#   VERSION 4.0.0
+#   DOWNLOAD_ONLY
+# )
 #add_library(printf INTERFACE)
 #target_sources(printf INTERFACE ${printf_SOURCE_DIR}/printf.c)
 #target_include_directories(printf SYSTEM INTERFACE ${printf_SOURCE_DIR})
@@ -86,6 +85,14 @@ target_sources(static-elf PRIVATE code/static-elf.c)
 target_include_directories(static-elf PUBLIC code)
 # NOTE(Ryan): Enable LTO
 set_property(TARGET static-elf PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+
+target_link_options(static-elf PRIVATE -TSTM32_FLASH.ld -L${CMAKE_CURRENT_LIST_DIR})
+set_target_properties(static-elf PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/STM32_FLASH.ld)  
+
+# IMPORTANT(Ryan): When generating files outside of CMake, use this binary dir
+get_target_property(dir static-elf BINARY_DIR)
+target_link_options(static-elf PRIVATE -Wl,-Map,${dir}/static-elf.map)
+set_target_properties(static-elf PROPERTIES ADDITIONAL_CLEAN_FILES ${dir}/static-elf.map)  
 
 # IMPORTANT(Ryan): Global variables likes set(CMAKE_C_FLAGS_DEBUG) only used for toolchain files
 target_compile_definitions(static-elf PRIVATE

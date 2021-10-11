@@ -10,7 +10,8 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 
 set(CPU_NAME cortex-m4)
 
-set(CMAKE_C_COMPILER    arm-none-eabi-gcc) set(CMAKE_CXX_COMPILER  arm-none-eabi-g++)
+set(CMAKE_C_COMPILER    arm-none-eabi-gcc) 
+set(CMAKE_CXX_COMPILER  arm-none-eabi-g++)
 set(AS                  arm-none-eabi-as)
 set(CMAKE_AR            arm-none-eabi-gcc-ar)
 set(OBJCOPY             arm-none-eabi-objcopy)
