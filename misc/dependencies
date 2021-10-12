@@ -1,0 +1,5 @@
+#!/bin/sh
+
+pip3 install lizard
+
+sudo apt install doxygen cppcheck gcovr lcov clang-format clang-tidy clang-tools

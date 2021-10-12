@@ -7,9 +7,37 @@ project(ELF
         LANGUAGES C)
 set_property(GLOBAL PROPERTY C_STANDARD 11)
 
+find_program(DOXYGEN doxygen)
+if(DOXYGEN)
+  add_custom_target(docs
+    COMMAND ${DOXYGEN} docs/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+endif()
+
+find_program(CLANG_FORMAT clang-format)
+if(CLANG_FORMAT)
+  # NOTE(Ryan): We could also specify a shell script as the command
+  add_custom_target(format
+    COMMAND ${CLANG_FORMAT}
+    # Use the .clang-format file in our root
+    -style=file
+    # Edit the files in place
+    -i
+    # Don't fall back on any defaults if the clang-format file isn't found
+    # Source search rules
+    arch/**/**/*.h arch/**/**/*.c src/**/*.c src/**/*.h
+    test/**/*.c test/**/*.h include/*.h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+  )
+endif()
+
+# IMPORTANT(Ryan): This property will remove a directory, while add_custom_target BYPRODUCTS will not.
+set_target_properties(docs PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_BINARY_DIR}/doc/)
+
 include(cmake/ArgsCheck.cmake)
 # include(cmake/BuildOptions.cmake)
 # include(cmake/Conversions.cmake)
+# include(cmake/AddExecutableWrapper.cmake)
 
 set(default_build_type "RelWithDebInfo")
 if(NOT CMAKE_BUILD_TYPE)
@@ -20,8 +48,6 @@ if(NOT CMAKE_BUILD_TYPE)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
                STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
-
-
 
 set(default_shared_lib OFF)
 # IMPORTANT(Ryan): Correctly handle OFF value or not set (better to use option())
